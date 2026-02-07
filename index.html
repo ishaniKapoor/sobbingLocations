@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobbing Locations</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Sobbing Locations</p>
+        <h1>Share your cries, find your friends, map the moments.</h1>
+        <p class="subhead">
+          A cozy, Strava-inspired feed for emotional check-ins. Save your cries with photos, time,
+          and reasons, then see them pinned on the map.
+        </p>
+      </div>
+      <div class="profile-chip" id="profileChip">
+        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&w=200&h=200" alt="Profile" />
+        <div>
+          <p class="chip-label">Signed in as</p>
+          <p class="chip-name" id="chipName">Guest</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="feed">Feed</button>
+      <button class="tab" data-tab="map">Map</button>
+      <button class="tab" data-tab="profiles">Profiles</button>
+    </nav>
+
+    <main>
+      <section class="panel active" id="feed">
+        <div class="panel-header">
+          <div>
+            <h2>Latest cries from you and your friends</h2>
+            <p>Log a moment, add a photo, and share the story behind it.</p>
+          </div>
+          <button class="ghost" id="seedData">Seed sample data</button>
+        </div>
+
+        <form class="card form" id="cryForm">
+          <h3>New cry entry</h3>
+          <div class="form-grid">
+            <label>
+              Who is crying?
+              <select id="cryAuthor" required></select>
+            </label>
+            <label>
+              Duration
+              <input type="text" id="cryDuration" placeholder="15 min, 2 hours" required />
+            </label>
+            <label>
+              Reason
+              <input type="text" id="cryReason" placeholder="Work, happy tears, etc." required />
+            </label>
+            <label>
+              Photo URL
+              <input type="url" id="cryPhoto" placeholder="https://" />
+            </label>
+            <label class="span-2">
+              Cry description
+              <textarea id="cryDescription" rows="3" required></textarea>
+            </label>
+            <label>
+              Latitude
+              <input type="number" step="0.0001" id="cryLat" placeholder="37.7749" />
+            </label>
+            <label>
+              Longitude
+              <input type="number" step="0.0001" id="cryLng" placeholder="-122.4194" />
+            </label>
+          </div>
+          <button type="submit">Post cry</button>
+        </form>
+
+        <div class="feed" id="feedList"></div>
+      </section>
+
+      <section class="panel" id="map">
+        <div class="panel-header">
+          <div>
+            <h2>Cry map</h2>
+            <p>Each pin is a place where someone in your circle let it all out.</p>
+          </div>
+          <div class="legend">
+            <span class="dot dot-you"></span> You
+            <span class="dot dot-friend"></span> Friends
+          </div>
+        </div>
+
+        <div class="map-grid">
+          <div class="map" id="mapCanvas">
+            <div class="map-overlay">
+              <p>World view</p>
+              <p>Use lat/lng to place pins</p>
+            </div>
+          </div>
+          <aside class="card map-list" id="mapList"></aside>
+        </div>
+      </section>
+
+      <section class="panel" id="profiles">
+        <div class="panel-header">
+          <div>
+            <h2>Profiles & friends</h2>
+            <p>Create your profile and add your closest cry-circle.</p>
+          </div>
+        </div>
+
+        <div class="profiles-grid">
+          <form class="card form" id="profileForm">
+            <h3>Your profile</h3>
+            <label>
+              Display name
+              <input type="text" id="profileName" required />
+            </label>
+            <label>
+              Handle
+              <input type="text" id="profileHandle" placeholder="@you" required />
+            </label>
+            <label>
+              Avatar URL
+              <input type="url" id="profileAvatar" placeholder="https://" />
+            </label>
+            <button type="submit">Save profile</button>
+          </form>
+
+          <form class="card form" id="friendForm">
+            <h3>Add a friend</h3>
+            <label>
+              Friend name
+              <input type="text" id="friendName" required />
+            </label>
+            <label>
+              Handle
+              <input type="text" id="friendHandle" placeholder="@friend" required />
+            </label>
+            <label>
+              Avatar URL
+              <input type="url" id="friendAvatar" placeholder="https://" />
+            </label>
+            <button type="submit">Add friend</button>
+          </form>
+
+          <div class="card" id="friendList">
+            <h3>Your circle</h3>
+            <div class="friend-list" id="friendCards"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Built for sharing tender moments. Export your data with local storage and deploy this static
+        site to Vercel.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

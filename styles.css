@@ -406,6 +406,48 @@ h1 {
   gap: 1.5rem;
 }
 
+.profiles-panel .panel-header {
+  background: var(--surface);
+  padding: 1.4rem 1.6rem;
+  border-radius: 24px;
+  border: 1px solid rgba(234, 223, 223, 0.7);
+  box-shadow: var(--shadow);
+}
+
+.profiles-panel .panel-header h2 {
+  font-size: 1.6rem;
+}
+
+.profiles-panel .panel-header p {
+  margin-top: 0.35rem;
+}
+
+.profiles-panel .card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.profiles-panel .form button {
+  align-self: flex-start;
+}
+
+.profiles-panel .friend-list {
+  gap: 1.2rem;
+}
+
+.profiles-panel .friend-card {
+  gap: 1rem;
+}
+
+.profiles-panel .request-card {
+  gap: 1rem;
+}
+
+.profiles-panel .request-actions button {
+  padding: 0.4rem 1rem;
+}
+
 .friend-list {
   display: grid;
   gap: 1rem;
@@ -507,5 +549,42 @@ footer {
 
   .form-grid .span-2 {
     grid-column: span 1;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .tabs {
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .profiles-panel .panel-header {
+    padding: 1.2rem 1.3rem;
+  }
+
+  .profiles-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .profiles-panel .card {
+    padding: 1.2rem;
+  }
+
+  .profiles-panel .form button {
+    width: 100%;
+  }
+
+  .profiles-panel .request-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .profiles-panel .request-actions button {
+    width: 100%;
   }
 }

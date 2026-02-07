@@ -2,6 +2,7 @@ const storageKeys = {
   profile: "sobbing.profile",
   friends: "sobbing.friends",
   cries: "sobbing.cries",
+  requests: "sobbing.requests",
 };
 
 const defaultProfile = {
@@ -55,10 +56,21 @@ const defaultCries = [
   },
 ];
 
+const defaultRequests = [
+  {
+    id: crypto.randomUUID(),
+    name: "Mina",
+    handle: "@mina",
+    avatar:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&w=200&h=200",
+  },
+];
+
 const state = {
   profile: loadStorage(storageKeys.profile, defaultProfile),
   friends: loadStorage(storageKeys.friends, defaultFriends),
   cries: loadStorage(storageKeys.cries, defaultCries),
+  requests: loadStorage(storageKeys.requests, defaultRequests),
 };
 
 const elements = {
@@ -68,13 +80,20 @@ const elements = {
   mapCanvas: document.getElementById("mapCanvas"),
   mapList: document.getElementById("mapList"),
   friendCards: document.getElementById("friendCards"),
+  requestList: document.getElementById("requestList"),
+  requestCount: document.getElementById("requestCount"),
   cryAuthor: document.getElementById("cryAuthor"),
   cryForm: document.getElementById("cryForm"),
   profileForm: document.getElementById("profileForm"),
   friendForm: document.getElementById("friendForm"),
+  requestForm: document.getElementById("requestForm"),
   seedData: document.getElementById("seedData"),
   chipName: document.getElementById("chipName"),
   profileChip: document.getElementById("profileChip"),
+  notificationButton: document.getElementById("notificationButton"),
+  notificationBadge: document.getElementById("notificationBadge"),
+  profileAvatarFile: document.getElementById("profileAvatarFile"),
+  profileAvatarPreview: document.getElementById("profileAvatarPreview"),
 };
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -82,6 +101,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
 });
+
+let pendingAvatarData = null;
 
 function loadStorage(key, fallback) {
   const saved = localStorage.getItem(key);
@@ -105,6 +126,10 @@ function updateProfileChip() {
     state.profile.avatar || defaultProfile.avatar;
 }
 
+function updateAvatarPreview(avatarUrl) {
+  elements.profileAvatarPreview.src = avatarUrl || defaultProfile.avatar;
+}
+
 function renderAuthorOptions() {
   const people = [state.profile, ...state.friends];
   elements.cryAuthor.innerHTML = people
@@ -124,6 +149,38 @@ function renderFriends() {
         <div>
           <strong>${friend.name}</strong>
           <span>${friend.handle}</span>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+
+function renderRequests() {
+  const count = state.requests.length;
+  elements.notificationBadge.textContent = count;
+  elements.notificationBadge.hidden = count === 0;
+  elements.requestCount.textContent = count;
+
+  if (count === 0) {
+    elements.requestList.innerHTML = `<p class="empty-state">No pending requests yet.</p>`;
+    return;
+  }
+
+  elements.requestList.innerHTML = state.requests
+    .map(
+      (request) => `
+      <div class="request-card">
+        <div class="friend-card">
+          <img src="${request.avatar || defaultProfile.avatar}" alt="${request.name}" />
+          <div>
+            <strong>${request.name}</strong>
+            <span>${request.handle}</span>
+          </div>
+        </div>
+        <div class="request-actions">
+          <button class="accept" data-action="accept" data-id="${request.id}">Accept</button>
+          <button class="decline" data-action="decline" data-id="${request.id}">Decline</button>
         </div>
       </div>
     `
@@ -197,13 +254,17 @@ function renderMap() {
     .join("");
 }
 
+function setActiveTab(tabId) {
+  elements.tabs.forEach((item) => item.classList.remove("active"));
+  elements.panels.forEach((panel) => panel.classList.remove("active"));
+  document.querySelector(`.tab[data-tab="${tabId}"]`)?.classList.add("active");
+  document.getElementById(tabId)?.classList.add("active");
+}
+
 function bindTabs() {
   elements.tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      elements.tabs.forEach((item) => item.classList.remove("active"));
-      elements.panels.forEach((panel) => panel.classList.remove("active"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
+      setActiveTab(tab.dataset.tab);
     });
   });
 }
@@ -245,12 +306,21 @@ function handleCrySubmit(event) {
 
 function handleProfileSubmit(event) {
   event.preventDefault();
+  const avatarInput = document.getElementById("profileAvatar").value.trim();
+  const nextAvatar =
+    pendingAvatarData ||
+    avatarInput ||
+    state.profile.avatar ||
+    defaultProfile.avatar;
   state.profile = {
     name: document.getElementById("profileName").value.trim(),
     handle: document.getElementById("profileHandle").value.trim(),
-    avatar: document.getElementById("profileAvatar").value.trim() || defaultProfile.avatar,
+    avatar: nextAvatar,
   };
   saveStorage(storageKeys.profile, state.profile);
+  pendingAvatarData = null;
+  elements.profileAvatarFile.value = "";
+  updateAvatarPreview(state.profile.avatar);
   updateProfileChip();
   renderAuthorOptions();
   renderMap();
@@ -270,16 +340,72 @@ function handleFriendSubmit(event) {
   renderAuthorOptions();
 }
 
+function handleRequestSubmit(event) {
+  event.preventDefault();
+  const newRequest = {
+    id: crypto.randomUUID(),
+    name: document.getElementById("requestName").value.trim(),
+    handle: document.getElementById("requestHandle").value.trim(),
+    avatar: document.getElementById("requestAvatar").value.trim() || defaultProfile.avatar,
+  };
+  state.requests.unshift(newRequest);
+  saveStorage(storageKeys.requests, state.requests);
+  elements.requestForm.reset();
+  renderRequests();
+}
+
+function handleRequestActions(event) {
+  const action = event.target.dataset.action;
+  if (!action) {
+    return;
+  }
+  const requestId = event.target.dataset.id;
+  const requestIndex = state.requests.findIndex((request) => request.id === requestId);
+  if (requestIndex === -1) {
+    return;
+  }
+  const [request] = state.requests.splice(requestIndex, 1);
+  if (action === "accept") {
+    state.friends.push({
+      name: request.name,
+      handle: request.handle,
+      avatar: request.avatar || defaultProfile.avatar,
+    });
+    saveStorage(storageKeys.friends, state.friends);
+    renderFriends();
+    renderAuthorOptions();
+  }
+  saveStorage(storageKeys.requests, state.requests);
+  renderRequests();
+}
+
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    pendingAvatarData = reader.result;
+    updateAvatarPreview(pendingAvatarData);
+  };
+  reader.readAsDataURL(file);
+}
+
 function seedSampleData() {
   state.profile = defaultProfile;
   state.friends = defaultFriends;
   state.cries = defaultCries;
+  state.requests = defaultRequests;
   saveStorage(storageKeys.profile, state.profile);
   saveStorage(storageKeys.friends, state.friends);
   saveStorage(storageKeys.cries, state.cries);
+  saveStorage(storageKeys.requests, state.requests);
   updateProfileChip();
+  updateAvatarPreview(state.profile.avatar);
   renderAuthorOptions();
   renderFriends();
+  renderRequests();
   renderFeed();
   renderMap();
 }
@@ -287,12 +413,17 @@ function seedSampleData() {
 function initForms() {
   document.getElementById("profileName").value = state.profile.name;
   document.getElementById("profileHandle").value = state.profile.handle;
-  document.getElementById("profileAvatar").value = state.profile.avatar;
+  document.getElementById("profileAvatar").value =
+    typeof state.profile.avatar === "string" && state.profile.avatar.startsWith("http")
+      ? state.profile.avatar
+      : "";
+  updateAvatarPreview(state.profile.avatar);
 }
 
 bindTabs();
 renderAuthorOptions();
 renderFriends();
+renderRequests();
 renderFeed();
 renderMap();
 updateProfileChip();
@@ -301,4 +432,11 @@ initForms();
 elements.cryForm.addEventListener("submit", handleCrySubmit);
 elements.profileForm.addEventListener("submit", handleProfileSubmit);
 elements.friendForm.addEventListener("submit", handleFriendSubmit);
+elements.requestForm.addEventListener("submit", handleRequestSubmit);
 elements.seedData.addEventListener("click", seedSampleData);
+elements.requestList.addEventListener("click", handleRequestActions);
+elements.notificationButton.addEventListener("click", () => {
+  setActiveTab("profiles");
+  elements.requestList.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+elements.profileAvatarFile.addEventListener("change", handleAvatarUpload);

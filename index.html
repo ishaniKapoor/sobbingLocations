@@ -16,11 +16,25 @@
           and reasons, then see them pinned on the map.
         </p>
       </div>
-      <div class="profile-chip" id="profileChip">
-        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&w=200&h=200" alt="Profile" />
-        <div>
-          <p class="chip-label">Signed in as</p>
-          <p class="chip-name" id="chipName">Guest</p>
+      <div class="header-actions">
+        <button class="notification-button" id="notificationButton" aria-label="Friend requests">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 3a5 5 0 0 0-5 5v2.5c0 .6-.2 1.2-.6 1.7L5 14v1h14v-1l-1.4-1.8c-.4-.5-.6-1.1-.6-1.7V8a5 5 0 0 0-5-5Zm0 18a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 21Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span class="notification-badge" id="notificationBadge">0</span>
+        </button>
+        <div class="profile-chip" id="profileChip">
+          <img
+            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&w=200&h=200"
+            alt="Profile"
+          />
+          <div>
+            <p class="chip-label">Signed in as</p>
+            <p class="chip-name" id="chipName">Guest</p>
+          </div>
         </div>
       </div>
     </header>
@@ -125,6 +139,18 @@
               Avatar URL
               <input type="url" id="profileAvatar" placeholder="https://" />
             </label>
+            <label>
+              Upload profile photo
+              <input type="file" id="profileAvatarFile" accept="image/*" />
+              <span class="helper-text">Saved in your browser for offline-friendly uploads.</span>
+            </label>
+            <div class="avatar-preview">
+              <img id="profileAvatarPreview" alt="Profile preview" />
+              <div>
+                <p class="preview-label">Preview</p>
+                <p class="preview-subtext">Your saved photo appears here.</p>
+              </div>
+            </div>
             <button type="submit">Save profile</button>
           </form>
 
@@ -145,9 +171,34 @@
             <button type="submit">Add friend</button>
           </form>
 
+          <form class="card form" id="requestForm">
+            <h3>Send a friend request</h3>
+            <label>
+              Friend name
+              <input type="text" id="requestName" required />
+            </label>
+            <label>
+              Handle
+              <input type="text" id="requestHandle" placeholder="@friend" required />
+            </label>
+            <label>
+              Avatar URL
+              <input type="url" id="requestAvatar" placeholder="https://" />
+            </label>
+            <button type="submit">Send request</button>
+          </form>
+
           <div class="card" id="friendList">
             <h3>Your circle</h3>
             <div class="friend-list" id="friendCards"></div>
+          </div>
+
+          <div class="card" id="requestListCard">
+            <h3>
+              Friend requests
+              <span class="request-count" id="requestCount">0</span>
+            </h3>
+            <div class="friend-list" id="requestList"></div>
           </div>
         </div>
       </section>

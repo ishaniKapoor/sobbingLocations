@@ -31,6 +31,47 @@ header.site-header {
   margin-bottom: 2.5rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notification-button {
+  border: none;
+  background: var(--surface);
+  color: var(--ink);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  box-shadow: var(--shadow);
+  position: relative;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.notification-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.notification-badge[hidden] {
+  display: none;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
@@ -154,6 +195,42 @@ h1 {
   font-size: 0.85rem;
   color: var(--muted);
   gap: 0.4rem;
+}
+
+.helper-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.avatar-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  background: var(--accent-soft);
+  border-radius: 16px;
+  margin-top: 0.8rem;
+}
+
+.avatar-preview img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.preview-subtext {
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-top: 0.2rem;
 }
 
 .form input,
@@ -349,6 +426,60 @@ h1 {
 
 .friend-card span {
   display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.request-count {
+  margin-left: 0.5rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.request-card {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.request-card img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.request-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.request-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.request-actions .accept {
+  background: var(--accent);
+  color: white;
+}
+
+.request-actions .decline {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.empty-state {
   color: var(--muted);
   font-size: 0.85rem;
 }
